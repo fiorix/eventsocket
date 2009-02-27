@@ -149,69 +149,69 @@ class EventProtocol(EventSocket):
 
 	# plain event name dispatcher
 	self._events_ = {
-            'CUSTOM': self.gotCustom,
-            'CHANNEL_CREATE': self.gotChannelCreate,
-            'CHANNEL_DESTROY': self.gotChannelDestroy,
-            'CHANNEL_STATE': self.gotChannelState,
-            'CHANNEL_ANSWER': self.gotChannelAnswer,
-            'CHANNEL_HANGUP': self.gotChannelHangup,
-            'CHANNEL_EXECUTE': self.gotChannelExecute,
-            'CHANNEL_EXECUTE_COMPLETE': self.gotChannelExecuteComplete,
-            'CHANNEL_BRIDGE': self.gotChannelBridge,
-            'CHANNEL_UNBRIDGE': self.gotChannelUnbridge,
-            'CHANNEL_PROGRESS': self.gotChannelProgress,
-            'CHANNEL_PROGRESS_MEDIA': self.gotChannelProgressMedia,
-            'CHANNEL_OUTGOING': self.gotChannelOutgoing,
-            'CHANNEL_PARK': self.gotChannelPark,
-            'CHANNEL_UNPARK': self.gotChannelUnpark,
-            'CHANNEL_APPLICATION': self.gotChannelApplication,
-            'CHANNEL_ORIGINATE': self.gotChannelOriginate,
-            'CHANNEL_UUID': self.gotChannelUuid,
-            'API': self.gotApi,
-            'LOG': self.gotLog,
-            'INBOUND_CHAN': self.gotInboundChannel,
-            'OUTBOUND_CHAN': self.gotOutboundChannel,
-            'STARTUP': self.gotStartup,
-            'SHUTDOWN': self.gotShutdown,
-            'PUBLISH': self.gotPublish,
-            'UNPUBLISH': self.gotUnpublish,
-            'TALK': self.gotTalk,
-            'NOTALK': self.gotNotalk,
-            'SESSION_CRASH': self.gotSessionCrash,
-            'MODULE_LOAD': self.gotModuleLoad,
-            'MODULE_UNLOAD': self.gotModuleUnload,
-            'DTMF': self.gotDtmf,
-            'MESSAGE': self.gotMessage,
-            'PRESENCE_IN': self.gotPresenceIn,
-            'NOTIFY_IN': self.gotNotifyIn,
-            'PRESENCE_OUT': self.gotPresenceOut,
-            'PRESENCE_PROBE': self.gotPresenceProbe,
-            'MESSAGE_WAITING': self.gotMessageWaiting,
-            'MESSAGE_QUERY': self.gotMessageQuery,
-            'ROSTER': self.gotRoster,
-            'CODEC': self.gotCodec,
-            'BACKGROUND_JOB': self.gotBackgroundJob,
-            'DETECTED_SPEECH': self.gotDetectSpeech,
-            'DETECTED_TONE': self.gotDetectTone,
-            'PRIVATE_COMMAND': self.gotPrivateCommand,
-            'HEARTBEAT': self.gotHeartbeat,
-            'TRAP': self.gotTrap,
-            'ADD_SCHEDULE': self.gotAddSchedule,
-            'DEL_SCHEDULE': self.gotDelSchedule,
-            'EXE_SCHEDULE': self.gotExeSchedule,
-            'RE_SCHEDULE': self.gotReSchedule,
-            'RELOADXML': self.gotReloadxml,
-            'NOTIFY': self.gotNotify,
-            'SEND_MESSAGE': self.gotSendMessage,
-            'RECV_MESSAGE': self.gotRecvMessage,
-            'REQUEST_PARAMS': self.gotRequestParams,
-            'CHANNEL_DATA': self.gotChannelData,
-            'GENERAL': self.gotGeneral,
-            'COMMAND': self.gotCommand,
-            'SESSION_HEARTBEAT': self.gotSessionHeartbeat,
-            'CLIENT_DISCONNECTED': self.gotClientDisconnected,
-            'SERVER_DISCONNECTED': self.gotServerDisconnected,
-            'ALL': self.gotAll
+            'CUSTOM': self.onCustom,
+            'CHANNEL_CREATE': self.onChannelCreate,
+            'CHANNEL_DESTROY': self.onChannelDestroy,
+            'CHANNEL_STATE': self.onChannelState,
+            'CHANNEL_ANSWER': self.onChannelAnswer,
+            'CHANNEL_HANGUP': self.onChannelHangup,
+            'CHANNEL_EXECUTE': self.onChannelExecute,
+            'CHANNEL_EXECUTE_COMPLETE': self.onChannelExecuteComplete,
+            'CHANNEL_BRIDGE': self.onChannelBridge,
+            'CHANNEL_UNBRIDGE': self.onChannelUnbridge,
+            'CHANNEL_PROGRESS': self.onChannelProgress,
+            'CHANNEL_PROGRESS_MEDIA': self.onChannelProgressMedia,
+            'CHANNEL_OUTGOING': self.onChannelOutgoing,
+            'CHANNEL_PARK': self.onChannelPark,
+            'CHANNEL_UNPARK': self.onChannelUnpark,
+            'CHANNEL_APPLICATION': self.onChannelApplication,
+            'CHANNEL_ORIGINATE': self.onChannelOriginate,
+            'CHANNEL_UUID': self.onChannelUuid,
+            'API': self.onApi,
+            'LOG': self.onLog,
+            'INBOUND_CHAN': self.onInboundChannel,
+            'OUTBOUND_CHAN': self.onOutboundChannel,
+            'STARTUP': self.onStartup,
+            'SHUTDOWN': self.onShutdown,
+            'PUBLISH': self.onPublish,
+            'UNPUBLISH': self.onUnpublish,
+            'TALK': self.onTalk,
+            'NOTALK': self.onNotalk,
+            'SESSION_CRASH': self.onSessionCrash,
+            'MODULE_LOAD': self.onModuleLoad,
+            'MODULE_UNLOAD': self.onModuleUnload,
+            'DTMF': self.onDtmf,
+            'MESSAGE': self.onMessage,
+            'PRESENCE_IN': self.onPresenceIn,
+            'NOTIFY_IN': self.onNotifyIn,
+            'PRESENCE_OUT': self.onPresenceOut,
+            'PRESENCE_PROBE': self.onPresenceProbe,
+            'MESSAGE_WAITING': self.onMessageWaiting,
+            'MESSAGE_QUERY': self.onMessageQuery,
+            'ROSTER': self.onRoster,
+            'CODEC': self.onCodec,
+            'BACKGROUND_JOB': self.onBackgroundJob,
+            'DETECTED_SPEECH': self.onDetectSpeech,
+            'DETECTED_TONE': self.onDetectTone,
+            'PRIVATE_COMMAND': self.onPrivateCommand,
+            'HEARTBEAT': self.onHeartbeat,
+            'TRAP': self.onTrap,
+            'ADD_SCHEDULE': self.onAddSchedule,
+            'DEL_SCHEDULE': self.onDelSchedule,
+            'EXE_SCHEDULE': self.onExeSchedule,
+            'RE_SCHEDULE': self.onReSchedule,
+            'RELOADXML': self.onReloadxml,
+            'NOTIFY': self.onNotify,
+            'SEND_MESSAGE': self.onSendMessage,
+            'RECV_MESSAGE': self.onRecvMessage,
+            'REQUEST_PARAMS': self.onRequestParams,
+            'CHANNEL_DATA': self.onChannelData,
+            'GENERAL': self.onGeneral,
+            'COMMAND': self.onCommand,
+            'SESSION_HEARTBEAT': self.onSessionHeartbeat,
+            'CLIENT_DISCONNECTED': self.onClientDisconnected,
+            'SERVER_DISCONNECTED': self.onServerDisconnected,
+            'ALL': self.onAll
 	}
 
 	# successful command reply by type
@@ -265,70 +265,70 @@ class EventProtocol(EventSocket):
     def apiFailure(self, failure): pass
 
     # callbacks by event name (plain)
-    def gotCustom(self, data): pass
-    def gotChannelCreate(self, data): pass
-    def gotChannelDestroy(self, data): pass
-    def gotChannelState(self, data): pass
-    def gotChannelAnswer(self, data): pass
-    def gotChannelHangup(self, data): pass
-    def gotChannelExecute(self, data): pass
-    def gotChannelExecuteComplete(self, data): pass
-    def gotChannelBridge(self, data): pass
-    def gotChannelUnbridge(self, data): pass
-    def gotChannelProgress(self, data): pass
-    def gotChannelProgressMedia(self, data): pass
-    def gotChannelOutgoing(self, data): pass
-    def gotChannelPark(self, data): pass
-    def gotChannelUnpark(self, data): pass
-    def gotChannelApplication(self, data): pass
-    def gotChannelOriginate(self, data): pass
-    def gotChannelUuid(self, data): pass
-    def gotApi(self, data): pass
-    def gotLog(self, data): pass
-    def gotInboundChannel(self, data): pass
-    def gotOutboundChannel(self, data): pass
-    def gotStartup(self, data): pass
-    def gotShutdown(self, data): pass
-    def gotPublish(self, data): pass
-    def gotUnpublish(self, data): pass
-    def gotTalk(self, data): pass
-    def gotNotalk(self, data): pass
-    def gotSessionCrash(self, data): pass
-    def gotModuleLoad(self, data): pass
-    def gotModuleUnload(self, data): pass
-    def gotDtmf(self, data): pass
-    def gotMessage(self, data): pass
-    def gotPresenceIn(self, data): pass
-    def gotNotifyIn(self, data): pass
-    def gotPresenceOut(self, data): pass
-    def gotPresenceProbe(self, data): pass
-    def gotMessageWaiting(self, data): pass
-    def gotMessageQuery(self, data): pass
-    def gotRoster(self, data): pass
-    def gotCodec(self, data): pass
-    def gotBackgroundJob(self, data): pass
-    def gotDetectSpeech(self, data): pass
-    def gotDetectTone(self, data): pass
-    def gotPrivateCommand(self, data): pass
-    def gotHeartbeat(self, data): pass
-    def gotTrap(self, data): pass
-    def gotAddSchedule(self, data): pass
-    def gotDelSchedule(self, data): pass
-    def gotExeSchedule(self, data): pass
-    def gotReSchedule(self, data): pass
-    def gotReloadxml(self, data): pass
-    def gotNotify(self, data): pass
-    def gotSendMessage(self, data): pass
-    def gotRecvMessage(self, data): pass
-    def gotRequestParams(self, data): pass
-    def gotChannelData(self, data): pass
-    def gotGeneral(self, data): pass
-    def gotCommand(self, data): pass
-    def gotSessionHeartbeat(self, data): pass
-    def gotClientDisconnected(self, data): pass
-    def gotServerDisconnected(self, data): pass
-    def gotAll(self, data): pass
-    def gotUnknownEvent(self, data): pass
+    def onCustom(self, data): pass
+    def onChannelCreate(self, data): pass
+    def onChannelDestroy(self, data): pass
+    def onChannelState(self, data): pass
+    def onChannelAnswer(self, data): pass
+    def onChannelHangup(self, data): pass
+    def onChannelExecute(self, data): pass
+    def onChannelExecuteComplete(self, data): pass
+    def onChannelBridge(self, data): pass
+    def onChannelUnbridge(self, data): pass
+    def onChannelProgress(self, data): pass
+    def onChannelProgressMedia(self, data): pass
+    def onChannelOutgoing(self, data): pass
+    def onChannelPark(self, data): pass
+    def onChannelUnpark(self, data): pass
+    def onChannelApplication(self, data): pass
+    def onChannelOriginate(self, data): pass
+    def onChannelUuid(self, data): pass
+    def onApi(self, data): pass
+    def onLog(self, data): pass
+    def onInboundChannel(self, data): pass
+    def onOutboundChannel(self, data): pass
+    def onStartup(self, data): pass
+    def onShutdown(self, data): pass
+    def onPublish(self, data): pass
+    def onUnpublish(self, data): pass
+    def onTalk(self, data): pass
+    def onNotalk(self, data): pass
+    def onSessionCrash(self, data): pass
+    def onModuleLoad(self, data): pass
+    def onModuleUnload(self, data): pass
+    def onDtmf(self, data): pass
+    def onMessage(self, data): pass
+    def onPresenceIn(self, data): pass
+    def onNotifyIn(self, data): pass
+    def onPresenceOut(self, data): pass
+    def onPresenceProbe(self, data): pass
+    def onMessageWaiting(self, data): pass
+    def onMessageQuery(self, data): pass
+    def onRoster(self, data): pass
+    def onCodec(self, data): pass
+    def onBackgroundJob(self, data): pass
+    def onDetectSpeech(self, data): pass
+    def onDetectTone(self, data): pass
+    def onPrivateCommand(self, data): pass
+    def onHeartbeat(self, data): pass
+    def onTrap(self, data): pass
+    def onAddSchedule(self, data): pass
+    def onDelSchedule(self, data): pass
+    def onExeSchedule(self, data): pass
+    def onReSchedule(self, data): pass
+    def onReloadxml(self, data): pass
+    def onNotify(self, data): pass
+    def onSendMessage(self, data): pass
+    def onRecvMessage(self, data): pass
+    def onRequestParams(self, data): pass
+    def onChannelData(self, data): pass
+    def onGeneral(self, data): pass
+    def onCommand(self, data): pass
+    def onSessionHeartbeat(self, data): pass
+    def onClientDisconnected(self, data): pass
+    def onServerDisconnected(self, data): pass
+    def onAll(self, data): pass
+    def onUnknownEvent(self, data): pass
 
     def _defer_(self, name):
 	deferred = defer.Deferred()
@@ -396,7 +396,7 @@ class EventProtocol(EventSocket):
     def eventPlain(self, ctx):
 	name = ctx.data.get('Event_Name')
 	method = self._events_.has_key(name) and \
-	    self._events_[name] or self.gotUnknownEvent
+	    self._events_[name] or self.onUnknownEvent
 	return method(ctx.data)
 	#try: method(ctx.data)
 	#except Exception, e:
