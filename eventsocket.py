@@ -38,6 +38,7 @@ class superdict(dict):
 
 class EventSocket(basic.LineReceiver):
     delimiter = '\n'
+    debug_enabled = False
 
     def __init__(self):
 	self.ctx = None
@@ -55,7 +56,7 @@ class EventSocket(basic.LineReceiver):
 	    self.transport.write(cmd)
 	    self.transport.write('\n\n')
 	except Exception, e:
-	    debug('[eventsocket] send: %s' % e)
+	    if self.debug_enabled: debug('[eventsocket] send: %s' % e)
 
     def sendmsg(self, name, arg=None, uuid='', lock=False):
 	if type(name) is unicode: name = name.encode('utf-8')
@@ -366,8 +367,7 @@ class EventProtocol(EventSocket):
 	self._execmsg_('playback', text, lock=True)
 
     def eventHandler(self, ctx):
-	#print 'got command', ctx
-	#print '\n'
+	if self.debug_enabled: debug('GOT EVENT: %s\n' % repr(ctx))
 	method = self._content_.get(ctx.get('Content_Type'), self.eventUnknown)
 	return method(ctx)
 	#try: method(ctx)
@@ -383,7 +383,7 @@ class EventProtocol(EventSocket):
     def apiResponse(self, ctx):
 	cmd, deferred = self._queue_.get()
 	if cmd == 'api': deferred.callback(ctx)
-	else: debug('[eventsocket] apiResponse got "%s": out of sync?' % cmd)
+	elif self.debug_enabled: debug('[eventsocket] apiResponse on "%s": out of sync?' % cmd)
 
     def commandReply(self, ctx):
 	cmd, deferred = self._queue_.get()
