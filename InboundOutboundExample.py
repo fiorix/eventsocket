@@ -40,7 +40,11 @@ class InboundProxy(EventProtocol):
 	for ext in ['1000', '1001', '1002']:
 	    self.calls.put(ext)
 	    print '[inboundproxy] originating call to extension %s' % ext
-	    self.bgapi("originate sofia/internal/%s%%192.168.0.3 '&socket(127.0.0.1:%d async full)'" % (ext, port))
+
+            # FreeSWITCH will park the call immediately if the destination is socket().
+            # when we receive this call on the outbound side, there won't be an ANSWER
+            # nor a PARK event we can watch; hence, we must start processing right away.
+	    self.bgapi("originate sofia/internal/%s%%192.168.99.4 '&socket(127.0.0.1:%d async full)'" % (ext, port))
 
     def eventplainFailure(self, failure):
 	self.factory.reconnect = False
@@ -95,28 +99,18 @@ class OutboundProxy(EventProtocol):
     def connectionMade(self):
 	self.connect()
 
-    # when we get OK from connect, send "myevents"
+    # when we get OK from connect, send "myevents" and "answer".
     def connectSuccess(self, ev):
 	self.ext = unique_id[ev.Unique_ID]
 	print '[outboundproxy] started controlling extension %s' % self.ext
 	self.myevents()
 
-    # when we get OK from myevents, do nothing (just for you to get the idea...)
+    # after we get OK for myevents, send "answer".
     def myeventsSuccess(self, ev):
-	pass
+        self.answer()
 
-    # sip softphones like x-like doesn't seem to send "ANSWER" (or else, fs doesn't send it)
-    # in order to answer such calls, we use this event
-    def onChannelPark(self, data):
-	print '[outboundproxy] going to answer parked call of extension %s' % self.ext
-	self.answer()
-
-    # when the extension answer the call, send the answer command
-    def onChannelAnswer(self, data):
-	print '[outboundproxy] extension %s answered the call' % self.ext
-	self.answer()
-
-    # when we get OK from answer, play something
+    # when we get OK from answer, play something. Note: on default FreeSWITCH
+    # deployments, the sounds directory is usually /usr/local/freeswitch/sounds
     def answerSuccess(self, ev):
 	print '[outboundproxy] going to play audio file for extension %s' % self.ext
 	self.playback('/opt/freeswitch/sounds/en/us/callie/ivr/8000/ivr-sample_submenu.wav',
@@ -131,7 +125,8 @@ class OutboundProxy(EventProtocol):
 	app = data.variable_current_application
 	if app == 'playback':
 	    terminator = data.get('variable_playback_terminator_used')
-	    print '[outboundproxy] extension %s finished playing file, terminator=%s' % (self.ext, terminator)
+            response = data.get('variable_current_application_response')
+	    print '[outboundproxy] extension %s finished playing file, terminator=%s, response=%s' % (self.ext, terminator, response)
 	    print '[outboundproxy] bridging extension %s to public conference 888' % self.ext
 	    self.bridge('sofia/external/888@conference.freeswitch.org')
 
