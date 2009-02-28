@@ -44,7 +44,7 @@ class InboundProxy(EventProtocol):
             # FreeSWITCH will park the call immediately if the destination is socket().
             # when we receive this call on the outbound side, there won't be an ANSWER
             # nor a PARK event we can watch; hence, we must start processing right away.
-	    self.bgapi("originate sofia/internal/%s%%192.168.99.4 '&socket(127.0.0.1:%d async full)'" % (ext, port))
+	    self.bgapi("originate sofia/internal/%s%%192.168.0.3 '&socket(127.0.0.1:%d async full)'" % (ext, port))
 
     def eventplainFailure(self, failure):
 	self.factory.reconnect = False
