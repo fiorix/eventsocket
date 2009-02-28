@@ -99,7 +99,7 @@ class OutboundProxy(EventProtocol):
     def connectionMade(self):
 	self.connect()
 
-    # when we get OK from connect, send "myevents" and "answer".
+    # when we get OK from connect, send "myevents"
     def connectSuccess(self, ev):
 	self.ext = unique_id[ev.Unique_ID]
 	print '[outboundproxy] started controlling extension %s' % self.ext
