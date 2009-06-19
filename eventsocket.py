@@ -228,7 +228,10 @@ class EventProtocol(EventSocket):
 	    'playback': '+OK',
 	    'hangup': '+OK',
 	    'sched_api': '+OK',
+            'ring_ready': '+OK',
 	    'record_session': '+OK',
+            'wait_for_silence': '+OK',
+            'sleep': '+OK',
 	    'vmd': '+OK',
 	    'set': '+OK',
 	}
@@ -256,8 +259,14 @@ class EventProtocol(EventSocket):
     def hangupFailure(self, failure): pass
     def sched_apiSuccess(self, ev): pass
     def sched_apiFailure(self, failure): pass
+    def ring_readySuccess(self, ev): pass
+    def ring_readyFailure(self, failure): pass
     def record_sessionSuccess(self, ev): pass
     def record_sessionFailure(self, failure): pass
+    def wait_for_silenceSuccess(self, ev): pass
+    def wait_for_silenceFailure(self, failure): pass
+    def sleepSuccess(self, ev): pass
+    def sleepFailure(self, ev): pass
     def vmdSuccess(self, ev): pass
     def vmdFailure(self, failure): pass
     def setSuccess(self, ev): pass
@@ -359,7 +368,10 @@ class EventProtocol(EventSocket):
     def bridge(self, text): self._execmsg_('bridge', text, lock=True)
     def hangup(self): self._execmsg_('hangup', lock=True)
     def sched_api(self, text): self._execmsg_('sched_api', text, lock=True)
+    def ring_ready(self): self._execmsg_('ring_ready')
     def record_session(self, text): self._execmsg_('record_session', text, lock=True)
+    def wait_for_silence(self, text): self._execmsg_('wait_for_silence', text, lock=True)
+    def sleep(self, text): self._execmsg_('sleep', text, lock=True)
     def vmd(self, text): self._execmsg_('vmd', text, lock=True)
     def set(self, text): self._execmsg_('set', text, lock=True)
     def playback(self, text, terminators=None):
