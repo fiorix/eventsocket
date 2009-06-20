@@ -65,7 +65,7 @@ class EventSocket(basic.LineReceiver):
 	self.transport.write('sendmsg %s\ncall-command: execute\n' % uuid)
 	self.transport.write('execute-app-name: %s\n' % name)
 	if arg: self.transport.write('execute-app-arg: %s\n' % arg)
-	if lock: self.transport.write('event-lock: true\n')
+	if lock or True: self.transport.write('event-lock: true\n')
 	self.transport.write('\n\n')
 
     def processLine(self, cur, line):
@@ -234,6 +234,8 @@ class EventProtocol(EventSocket):
             'sleep': '+OK',
 	    'vmd': '+OK',
 	    'set': '+OK',
+	    'play_fsv': '+OK',
+	    'record_fsv': '+OK',
 	}
 
     # callbacks by content type
@@ -273,6 +275,10 @@ class EventProtocol(EventSocket):
     def setFailure(self, failure): pass
     def apiSuccess(self, ev): pass
     def apiFailure(self, failure): pass
+    def play_fsvSuccess(self, ev): pass
+    def play_fsvFailure(self, failure): pass
+    def record_fsvSuccess(self, ev): pass
+    def record_fsvFailure(self, failure): pass
 
     # callbacks by event name (plain)
     def onCustom(self, data): pass
@@ -374,6 +380,8 @@ class EventProtocol(EventSocket):
     def sleep(self, text): self._execmsg_('sleep', text, lock=True)
     def vmd(self, text): self._execmsg_('vmd', text, lock=True)
     def set(self, text): self._execmsg_('set', text, lock=True)
+    def play_fsv(self, text): self._execmsg_('play_fsv', text, lock=True)
+    def record_fsv(self, text): self._execmsg_('record_fsv', text, lock=True)
     def playback(self, text, terminators=None):
 	self.set('playback_terminators=%s' % terminators or 'none')
 	self._execmsg_('playback', text, lock=True)
