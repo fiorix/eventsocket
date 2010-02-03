@@ -372,7 +372,7 @@ class EventProtocol(EventSocket):
     def myevents(self): self._exec_('myevents')
     def answer(self): self._execmsg_('answer', lock=True)
     def bridge(self, text): self._execmsg_('bridge', text, lock=True)
-    def hangup(self): self._execmsg_('hangup', lock=True)
+    def hangup(self, text): self._execmsg_('hangup', text, lock=True)
     def sched_api(self, text): self._execmsg_('sched_api', text, lock=True)
     def ring_ready(self): self._execmsg_('ring_ready')
     def record_session(self, text): self._execmsg_('record_session', text, lock=True)
