@@ -24,6 +24,12 @@ from twisted.python import log
 from twisted.protocols import basic
 from twisted.internet import defer, reactor, protocol
 
+class EventError(Exception):
+    pass
+
+class AuthError(Exception):
+    pass
+
 class _O(dict):
     """Translates dictionary keys to instance attributes"""
     def __setattr__(self, k, v):
@@ -154,39 +160,22 @@ class EventProtocol(EventSocket):
 
         # callbacks by event's content-type
         self.__EventCallbacks = {
-            "auth/request": self._authRequest,
+            "auth/request": self.authRequest,
             "api/response": self._apiResponse,
             "command/reply": self._commandReply,
             "text/event-plain": self._plainEvent,
             "text/disconnect-notice": self.onDisconnect,
         }
 
-    def __protocolEnqueue(self, name):
-        deferred = defer.Deferred()
-        evname = "%sSuccess" % name
-        success = getattr(self, evname, None)
-        if success:
-            deferred.addCallback(success)
-        else:
-            deferred.addCallback(self.unboundEvent, evname)
-
-        evname = "%sFailure" % name
-        failure = getattr(self, evname, None)
-        if failure:
-            deferred.addErrback(failure)
-        else:
-            deferred.addErrback(self.unboundEvent, evname)
-
-        self.__EventQueue.append((name, deferred))
-        return deferred
-
     def __protocolSend(self, name, args=""):
-        deferred = self.__protocolEnqueue(name)
+        deferred = defer.Deferred()
+        self.__EventQueue.append((name, deferred))
         self.send("%s %s" % (name, args))
         return deferred
 
     def __protocolSendmsg(self, name, args=None, uuid="", lock=False):
-        deferred = self.__protocolEnqueue(name)
+        deferred = defer.Deferred()
+        self.__EventQueue.append((name, deferred))
         self.sendmsg(name, args, uuid, lock)
         return deferred
 
@@ -200,8 +189,8 @@ class EventProtocol(EventSocket):
             else:
                 return self.unknownContentType(content_type, ctx)
     
-    def _authRequest(self, ctx):
-        self.auth(self.factory.password)
+    def authRequest(self, ctx):
+        pass
 
     def onDisconnect(self, ctx):
         pass
@@ -211,15 +200,16 @@ class EventProtocol(EventSocket):
         if cmd == "api":
             deferred.callback(ctx)
         else:
-            log.err("apiResponse on '%s': out of sync?" % cmd,
-                logLevel=log.logging.DEBUG)
+            deferred.errback(EventError("apiResponse on '%s': out of sync?" % cmd))
 
     def _commandReply(self, ctx):
         cmd, deferred = self.__EventQueue.pop(0)
         if ctx.Reply_Text.startswith("+OK"):
             deferred.callback(ctx)
+        elif cmd == "auth":
+            deferred.errback(AuthError("invalid password"))
         else:
-            deferred.errback(ctx)
+            deferred.errback(EventError(ctx))
 
     def _plainEvent(self, ctx):
         name = ctx.data.get("Event_Name")
@@ -243,42 +233,42 @@ class EventProtocol(EventSocket):
     # EVENT SOCKET COMMANDS
     def api(self, args):
         "Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#api"
-        self.__protocolSend("api", args)
+        return self.__protocolSend("api", args)
 
     def bgapi(self, args):
         "Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#bgapi"
-        self.__protocolSend("bgapi", args)
+        return self.__protocolSend("bgapi", args)
 
     def exit(self):
         "Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#exit"
-        self.__protocolSend("exit")
+        return self.__protocolSend("exit")
 
     def eventplain(self, args):
         "http://wiki.freeswitch.org/wiki/Event_Socket#event"
-        self.__protocolSend("eventplain", args)
+        return self.__protocolSend("eventplain", args)
 
     def auth(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#auth
         This method is only allowed for Inbound connections"""
-        deferred = self.__protocolSend("auth", args)
+        return self.__protocolSend("auth", args)
 
     def connect(self):
         # from now on, everything (below) is outbound only
         "Please refer to http://wiki.freeswitch.org/wiki/Event_Socket_Outbound#Using_Netcat"
-        self.__protocolSend("connect")
+        return self.__protocolSend("connect")
 
     def myevents(self):
         "Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#event"
-        self.__protocolSend("myevents")
+        return self.__protocolSend("myevents")
 
     def answer(self):
         "Please refer to http://wiki.freeswitch.org/wiki/Event_Socket_Outbound#Using_Netcat"
-        self.__protocolSendmsg("answer", lock=True)
+        return self.__protocolSendmsg("answer", lock=True)
 
     def bridge(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Event_Socket_Outbound
         example: bridge("{ignore_early_media=true}sofia/gateway/myGW/177808")"""
-        self.__protocolSendmsg("bridge", args, lock=True)
+        return self.__protocolSendmsg("bridge", args, lock=True)
 
     def hangup(self, reason=""):
         """Hangup may be used by both Inbound and Outbound connections.
@@ -288,63 +278,63 @@ class EventProtocol(EventSocket):
         When used by Outbound connections, the `reason` argument must be ignored.
         Please refer to http://wiki.freeswitch.org/wiki/Event_Socket_Outbound for
         details."""
-        self.__protocolSendmsg("hangup", reason, lock=True)
+        return self.__protocolSendmsg("hangup", reason, lock=True)
 
     def sched_api(self, args):
         "Please refer to http://wiki.freeswitch.org/wiki/Mod_commands#sched_api"
-        self.__protocolSendmsg("sched_api", args, lock=True)
+        return self.__protocolSendmsg("sched_api", args, lock=True)
 
     def ring_ready(self):
         "Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_ring_ready"
-        self.__protocolSendmsg("ring_ready")
+        return self.__protocolSendmsg("ring_ready")
 
     def record_session(self, filename):
         """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_record_session
         example: record_session("/tmp/dump.gsm")"""
-        self.__protocolSendmsg("record_session", filename, lock=True)
+        return self.__protocolSendmsg("record_session", filename, lock=True)
 
     def bind_meta_app(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_bind_meta_app
         example: bind_meta_app("2 ab s record_session::/tmp/dump.gsm")"""
-        self.__protocolSendmsg("bind_meta_app", args, lock=True)
+        return self.__protocolSendmsg("bind_meta_app", args, lock=True)
 
     def wait_for_silence(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_wait_for_silence
         example: wait_for_silence("200 15 10 5000")"""
-        self.__protocolSendmsg("wait_for_silence", args, lock=True)
+        return self.__protocolSendmsg("wait_for_silence", args, lock=True)
 
     def sleep(self, milliseconds):
         """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_sleep
         example: sleep(5000) / sleep("5000")"""
-        self.__protocolSendmsg("sleep", milliseconds, lock=True)
+        return self.__protocolSendmsg("sleep", milliseconds, lock=True)
 
     def vmd(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Mod_vmd
         example: vmd("start") / vmd("stop")"""
-        self.__protocolSendmsg("vmd", args, lock=True)
+        return self.__protocolSendmsg("vmd", args, lock=True)
 
     def set(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Channel_Variables
         example: set("ringback=${us-ring}")"""
-        self.__protocolSendmsg("set", args, lock=True)
+        return self.__protocolSendmsg("set", args, lock=True)
 
     def start_dtmf(self):
         "Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_start_dtmf"
-        self.__protocolSendmsg("start_dtmf", lock=True)
+        return self.__protocolSendmsg("start_dtmf", lock=True)
 
     def start_dtmf_generate(self):
         "Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_start_dtmf_generate"
-        self.__protocolSendmsg("start_dtmf_generate", "true", lock=True)
+        return self.__protocolSendmsg("start_dtmf_generate", "true", lock=True)
 
     def play_fsv(self, filename):
         """Please refer to http://wiki.freeswitch.org/wiki/Mod_fsv
         example: play_fsv("/tmp/video.fsv")"""
-        self.__protocolSendmsg("play_fsv", filename, lock=True)
+        return self.__protocolSendmsg("play_fsv", filename, lock=True)
 
     def record_fsv(self, filename):
         """Please refer to http://wiki.freeswitch.org/wiki/Mod_fsv
         example: record_fsv("/tmp/video.fsv")"""
-        self.__protocolSendmsg("record_fsv", filename, lock=True)
+        return self.__protocolSendmsg("record_fsv", filename, lock=True)
 
     def playback(self, filename, terminators=None):
         """Please refer to http://wiki.freeswitch.org/wiki/Mod_playback
@@ -354,4 +344,4 @@ class EventProtocol(EventSocket):
         In this case, the audio playback is automatically terminated 
         by pressing either '#' or '8'"""
         self.set("playback_terminators=%s" % terminators or "none")
-        self.__protocolSendmsg("playback", filename, lock=True)
+        return self.__protocolSendmsg("playback", filename, lock=True)
