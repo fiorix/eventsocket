@@ -6,9 +6,9 @@ from setuptools import setup
 setup(
     name="eventsocket",
     version="0.1.3",
-    description="Twisted extension for the FreeSwitch Event Socket",
+    description="Twisted protocol for the FreeSWITCH's Event Socket",
     author="Alexandre Fiori",
-    url="http://github.com/fiorix/txeventsocket",
+    url="http://github.com/fiorix/eventsocket",
     py_modules=["eventsocket"],
     #install_requires=["twisted"],
 )
