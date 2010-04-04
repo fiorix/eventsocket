@@ -1,6 +1,6 @@
 # coding: utf-8
-# freeswitch's event socket protocol for twisted
-# Copyright (C) 2009  Alexandre Fiori & Arnaldo Pereira
+# Twisted protocol for the FreeSWITCH's Event Socket
+# Copyright (C) 2010 Alexandre Fiori & Arnaldo Pereira
 # 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -23,6 +23,8 @@ from cStringIO import StringIO
 from twisted.python import log
 from twisted.protocols import basic
 from twisted.internet import defer, reactor, protocol
+
+"Twisted protocol for the FreeSWITCH's Event Socket"
 
 class EventError(Exception):
     pass

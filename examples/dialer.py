@@ -80,6 +80,7 @@ def main():
     factory = MyFactory(password="ClueCon")
     reactor.connectTCP("127.0.0.1", 8021, factory)
 
+    # Wait for the connection to be established
     try:
         client = yield factory.ready
     except Exception, e:
