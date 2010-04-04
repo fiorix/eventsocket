@@ -26,12 +26,12 @@ class MyProtocol(eventsocket.EventProtocol):
             self.factory.continueTrying = False
             self.factory.ready.errback(e)
 
+        # Set the events we want to get.
+        yield self.eventplain("BACKGROUND_JOB CHANNEL_HANGUP")
+
         # Tell the factory that we're ready. Pass the protocol
         # instance as argument.
         self.factory.ready.callback(self)
-
-        # Set the events we want to get.
-        yield self.eventplain("BACKGROUND_JOB CHANNEL_HANGUP")
 
     def make_call(self, ext, context):
         def _success(ev, data):
