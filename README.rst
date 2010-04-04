@@ -18,3 +18,11 @@ This code is part of the core of the `Nuswit Telephony API <http://nuswit.com>`_
 Examples
 ========
 Examples are available in the `examples/ <http://github.com/fiorix/eventsocket/tree/master/examples/>`_ directory.
+
+Credits
+=======
+Thanks to (in no particular order):
+
+- Nuswit Telephony API
+
+    - For allowing this code to be published.
