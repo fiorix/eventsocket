@@ -60,13 +60,9 @@ class EventSocket(basic.LineReceiver):
         ]
 
     def send(self, cmd):
-        try:
-            if isinstance(cmd, types.UnicodeType):
-                cmd = cmd.encode("utf-8")
-            self.transport.write(cmd+"\n\n")
-        except Exception, e:
-            log.err("[eventsocket] send: %s" % str(e),
-                logLevel=log.logging.DEBUG)
+        if isinstance(cmd, types.UnicodeType):
+            cmd = cmd.encode("utf-8")
+        self.transport.write(cmd+"\n\n")
 
     def sendmsg(self, name, arg=None, uuid="", lock=False):
         if isinstance(name, types.UnicodeType):
