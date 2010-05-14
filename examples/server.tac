@@ -28,7 +28,8 @@ class MyProtocol(eventsocket.EventProtocol):
         # Anyway, the first thing to do when receiving such connections
         # from the freeswitch, is to send the `connect` command. We do this by
         # calling self.connect().
-        yield self.connect()
+        data = yield self.connect()
+        #print "data is:", data
 
         # After the connection with the eventsocket is established, we may
         # inform the server about what type of events we want to receive.
