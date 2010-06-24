@@ -240,12 +240,13 @@ class EventProtocol(EventSocket):
         return self.__protocolSend("exit")
 
     def eventplain(self, args):
-        "http://wiki.freeswitch.org/wiki/Event_Socket#event"
+        "Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#event"
         return self.__protocolSend("eventplain", args)
 
     def auth(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#auth
-        This method is only allowed for Inbound connections"""
+        
+        This method is allowed only for Inbound connections."""
         return self.__protocolSend("auth", args)
 
     def connect(self):
@@ -263,17 +264,23 @@ class EventProtocol(EventSocket):
 
     def bridge(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Event_Socket_Outbound
-        example: bridge("{ignore_early_media=true}sofia/gateway/myGW/177808")"""
+        
+        >>> bridge("{ignore_early_media=true}sofia/gateway/myGW/177808")
+        """
         return self.__protocolSendmsg("bridge", args, lock=True)
 
     def hangup(self, reason=""):
         """Hangup may be used by both Inbound and Outbound connections.
+        
         When used by Inbound connections, you may add the extra `reason`
         argument. Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#hangup
         for details.
+        
         When used by Outbound connections, the `reason` argument must be ignored.
+        
         Please refer to http://wiki.freeswitch.org/wiki/Event_Socket_Outbound for
-        details."""
+        details.
+        """
         return self.__protocolSendmsg("hangup", reason, lock=True)
 
     def sched_api(self, args):
@@ -286,32 +293,46 @@ class EventProtocol(EventSocket):
 
     def record_session(self, filename):
         """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_record_session
-        example: record_session("/tmp/dump.gsm")"""
+        
+        >>> record_session("/tmp/dump.gsm")
+        """
         return self.__protocolSendmsg("record_session", filename, lock=True)
 
     def bind_meta_app(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_bind_meta_app
-        example: bind_meta_app("2 ab s record_session::/tmp/dump.gsm")"""
+        
+        >>> bind_meta_app("2 ab s record_session::/tmp/dump.gsm")
+        """
         return self.__protocolSendmsg("bind_meta_app", args, lock=True)
 
     def wait_for_silence(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_wait_for_silence
-        example: wait_for_silence("200 15 10 5000")"""
+        
+        >>> wait_for_silence("200 15 10 5000")
+        """
         return self.__protocolSendmsg("wait_for_silence", args, lock=True)
 
     def sleep(self, milliseconds):
         """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_sleep
-        example: sleep(5000) / sleep("5000")"""
+        
+        >>> sleep(5000)
+        >>> sleep("5000")
+        """
         return self.__protocolSendmsg("sleep", milliseconds, lock=True)
 
     def vmd(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Mod_vmd
-        example: vmd("start") / vmd("stop")"""
+        
+        >>> vmd("start")
+        >>> vmd("stop")
+        """
         return self.__protocolSendmsg("vmd", args, lock=True)
 
     def set(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Channel_Variables
-        example: set("ringback=${us-ring}")"""
+        
+        >>> set("ringback=${us-ring}")
+        """
         return self.__protocolSendmsg("set", args, lock=True)
 
     def start_dtmf(self):
@@ -324,20 +345,28 @@ class EventProtocol(EventSocket):
 
     def play_fsv(self, filename):
         """Please refer to http://wiki.freeswitch.org/wiki/Mod_fsv
-        example: play_fsv("/tmp/video.fsv")"""
+        
+        >>> play_fsv("/tmp/video.fsv")
+        """
         return self.__protocolSendmsg("play_fsv", filename, lock=True)
 
     def record_fsv(self, filename):
         """Please refer to http://wiki.freeswitch.org/wiki/Mod_fsv
-        example: record_fsv("/tmp/video.fsv")"""
+        
+        >>> record_fsv("/tmp/video.fsv")
+        """
         return self.__protocolSendmsg("record_fsv", filename, lock=True)
 
     def playback(self, filename, terminators=None):
         """Please refer to http://wiki.freeswitch.org/wiki/Mod_playback
+        
         The optional argument `terminators` may contain a string with
         the characters that will terminate the playback.
-        example: playback("/tmp/dump.gsm", terminators="#8")
+        
+        >>> playback("/tmp/dump.gsm", terminators="#8")
+        
         In this case, the audio playback is automatically terminated 
-        by pressing either '#' or '8'"""
+        by pressing either '#' or '8'.
+        """
         self.set("playback_terminators=%s" % terminators or "none")
         return self.__protocolSendmsg("playback", filename, lock=True)
