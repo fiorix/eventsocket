@@ -22,7 +22,8 @@ from twisted.python import log
 from twisted.protocols import basic
 from twisted.internet import defer, reactor, protocol
 
-"Twisted protocol for the FreeSWITCH's Event Socket"
+"Twisted protocol for the FreeSWITCH Event Socket"
+__all__ = ['EventError', 'AuthError', 'EventSocket', 'EventProtocol']
 
 class EventError(Exception):
     pass
