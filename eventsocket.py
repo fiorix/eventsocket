@@ -14,6 +14,8 @@
 # for the specific language governing rights and limitations under the
 # License.
 
+"Twisted protocol for the FreeSWITCH Event Socket"
+
 import types
 import string
 import re, urllib
@@ -21,9 +23,6 @@ from cStringIO import StringIO
 from twisted.python import log
 from twisted.protocols import basic
 from twisted.internet import defer, reactor, protocol
-
-"Twisted protocol for the FreeSWITCH Event Socket"
-__all__ = ['EventError', 'AuthError', 'EventSocket', 'EventProtocol']
 
 class EventError(Exception):
     pass
@@ -371,3 +370,6 @@ class EventProtocol(EventSocket):
         """
         self.set("playback_terminators=%s" % terminators or "none")
         return self.__protocolSendmsg("playback", filename, lock=True)
+
+
+__all__ = ['EventError', 'AuthError', 'EventSocket', 'EventProtocol']
