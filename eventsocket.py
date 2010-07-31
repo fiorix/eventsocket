@@ -240,8 +240,45 @@ class EventProtocol(EventSocket):
         return self.__protocolSend("exit")
 
     def eventplain(self, args):
+        """Here for backwards compatibility, use event('plain ...') instead."""
+        return self.event('plain %s' % args)
+
+    def event(self, args):
         "Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#event"
-        return self.__protocolSend("eventplain", args)
+        return self.__protocolSendmsg("event", args, lock=True)
+
+    def fire_event(self, args):
+        """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_event
+
+        >>> app_event('Event-Subclass=myevent::notify,Event-Name=CUSTOM,key1=value1,key2=value2')
+        """
+        return self.__protocolSendmsg('event', args, lock=True)
+
+    def filter(self, args):
+        """Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#filter
+
+        The user might pass any number of values to filter an event for. But, from the point
+        filter() is used, just the filtered events will come to the app - this is where this
+        function differs from event().
+
+        >>> filter('Event-Name MYEVENT')
+        >>> filter('Unique-ID 4f37c5eb-1937-45c6-b808-6fba2ffadb63')
+        """
+        return self.__protocolSend('filter', args)
+
+    def filter_delete(self, args):
+        """Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#filter_delete
+
+        >>> filter_delete('Event-Name MYEVENT')
+        """
+        return self.__protocolSend('filter delete', args)
+
+    def verbose_events(self):
+        """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_verbose_events
+
+        >>> verbose_events()
+        """
+        return self.__protocolSendmsg('verbose_events', lock=True)
 
     def auth(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#auth
@@ -250,7 +287,6 @@ class EventProtocol(EventSocket):
         return self.__protocolSend("auth", args)
 
     def connect(self):
-        # from now on, everything (below) is outbound only
         "Please refer to http://wiki.freeswitch.org/wiki/Event_Socket_Outbound#Using_Netcat"
         return self.__protocolSend("connect")
 
@@ -329,19 +365,69 @@ class EventProtocol(EventSocket):
         return self.__protocolSendmsg("vmd", args, lock=True)
 
     def set(self, args):
-        """Please refer to http://wiki.freeswitch.org/wiki/Channel_Variables
+        """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_set
         
         >>> set("ringback=${us-ring}")
         """
         return self.__protocolSendmsg("set", args, lock=True)
 
+    def set_global(self, args):
+        """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_set_global
+        
+        >>> set_global("global_var=value")
+        """
+        return self.__protocolSendmsg("set_global", args, lock=True)
+
+    def unset(self, args):
+        """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_unset
+        
+        >>> unset("ringback")
+        """
+        return self.__protocolSendmsg("unset", args, lock=True)
+
     def start_dtmf(self):
-        "Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_start_dtmf"
+        """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_start_dtmf
+
+        >>> start_dtmf()
+        """
         return self.__protocolSendmsg("start_dtmf", lock=True)
 
+    def stop_dtmf(self):
+        """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_stop_dtmf
+
+        >>> stop_dtmf()
+        """
+        return self.__protocolSendmsg("stop_dtmf", lock=True)
+
     def start_dtmf_generate(self):
-        "Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_start_dtmf_generate"
+        """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_start_dtmf_generate
+
+        >>> start_dtmf_generate()
+        """
         return self.__protocolSendmsg("start_dtmf_generate", "true", lock=True)
+
+    def stop_dtmf_generate(self):
+        """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_stop_dtmf_generate
+
+        >>> stop_dtmf_generate()
+        """
+        return self.__protocolSendmsg("stop_dtmf_generate", lock=True)
+
+    def queue_dtmf(self, args):
+        """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_queue_dtmf
+
+        Enqueue each received dtmf, that'll be sent once the call is bridged.
+
+        >>> queue_dtmf("0123456789")
+        """
+        return self.__protocolSendmsg("queue_dtmf", args, lock=True)
+
+    def flush_dtmf(self):
+        """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_flush_dtmf
+
+        >>> flush_dtmf()
+        """
+        return self.__protocolSendmsg("flush_dtmf", lock=True)
 
     def play_fsv(self, filename):
         """Please refer to http://wiki.freeswitch.org/wiki/Mod_fsv
@@ -370,6 +456,27 @@ class EventProtocol(EventSocket):
         """
         self.set("playback_terminators=%s" % terminators or "none")
         return self.__protocolSendmsg("playback", filename, lock=True)
+
+    def transfer(self, args):
+        """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_transfer
+
+        >>> transfer("3222 XML default")
+        """
+        return self.__protocolSendmsg("transfer", args, lock=True)
+
+    def att_xfer(self, url):
+        """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_att_xfer
+        
+        >>> att_xfer("user/1001")
+        """
+        return self.__protocolSendmsg("att_xfer", url, lock=True)
+
+    def endless_playback(self, filename):
+        """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_endless_playback
+        
+        >>> endless_playback("/tmp/dump.gsm")
+        """
+        return self.__protocolSendmsg("endless_playback", filename, lock=True)
 
 
 __all__ = ['EventError', 'AuthError', 'EventSocket', 'EventProtocol']
