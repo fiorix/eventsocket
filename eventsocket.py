@@ -241,7 +241,7 @@ class EventProtocol(EventSocket):
 
     def eventplain(self, args):
         "Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#event"
-        return self.__protocolSendmsg('eventplain', args)
+        return self.__protocolSend('eventplain', args)
 
     def event(self, args):
         "Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#event"
