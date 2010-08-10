@@ -240,19 +240,12 @@ class EventProtocol(EventSocket):
         return self.__protocolSend("exit")
 
     def eventplain(self, args):
-        """Here for backwards compatibility, use event('plain ...') instead."""
-        return self.event('plain %s' % args)
+        "Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#event"
+        return self.__protocolSendmsg('eventplain', args)
 
     def event(self, args):
         "Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#event"
         return self.__protocolSendmsg("event", args, lock=True)
-
-    def fire_event(self, args):
-        """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_event
-
-        >>> app_event('Event-Subclass=myevent::notify,Event-Name=CUSTOM,key1=value1,key2=value2')
-        """
-        return self.__protocolSendmsg('event', args, lock=True)
 
     def filter(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#filter
