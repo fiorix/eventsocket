@@ -75,7 +75,7 @@ class EventSocket(basic.LineReceiver):
         if lock is True:
             self.transport.write("event-lock: true\n")
 
-	    self.transport.write("\n\n")
+        self.transport.write("\n\n")
 
     def processLine(self, ev, line):
         try:
