@@ -33,19 +33,18 @@ class MyProtocol(eventsocket.EventProtocol):
 
         # After the connection with the eventsocket is established, we may
         # inform the server about what type of events we want to receive.
-        # This may be done by self.eventplain("LIST_OF EVENT_NAMES") or
-        # the self.myevents().
+        # Use either self.eventplain("LIST_OF EVENT_NAMES") or self.myevents().
         # Please refer to http://wiki.freeswitch.org/wiki/Event_Socket_Outbound#Events
         # for more information.
         yield self.myevents()
 
-        # The next thing is to `answer` the call. This is done by calling
+        # The next step is to `answer` the call. This is done by calling
         # self.answer(). After answering the call, our service will begin
         # receiving events from the freeswitch. 
         yield self.answer()
 
         # And now, a little trick.
-        # Keep in mind that commands like `playback` will return an +OK
+        # Keep in mind that commands like `playback` will return +OK
         # from the server, "immediately". However, the only way to know
         # that the audio file being played has finished, is by handling
         # CHANNEL_EXECUTE_COMPLETE events.
@@ -73,7 +72,7 @@ class MyProtocol(eventsocket.EventProtocol):
     def onDtmf(self, ev):
         # for k, v in sorted(ev.items()):
         #   print k, "=", v
-        print "GOT DTMF:", ev.DTMF_Digit
+        print "DTMF:", ev.DTMF_Digit
 
     def onChannelExecuteComplete(self, ev):
         if ev.variable_current_application == "playback":
@@ -87,7 +86,7 @@ class MyProtocol(eventsocket.EventProtocol):
             (ev.variable_presence_id, ev.Hangup_Cause, duration)
 
     # To avoid 'unbound Event' messages in the log, you may
-    # define the unboundEvent method in your class:
+    # define the unboundEvent() method in your class:
     # def unboundEvent(self, evdata, evname):
     #    pass
     #

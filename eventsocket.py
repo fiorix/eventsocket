@@ -24,6 +24,8 @@ from twisted.python import log
 from twisted.protocols import basic
 from twisted.internet import defer, reactor, protocol
 
+__version__ = "0.1.4"
+
 class EventError(Exception):
     pass
 
@@ -180,7 +182,7 @@ class EventProtocol(EventSocket):
         content_type = ctx.get("Content_Type", None)
         if content_type:
             method = self.__EventCallbacks.get(content_type, None)
-            if method:
+            if callable(method):
                 return method(ctx)
             else:
                 return self.unknownContentType(content_type, ctx)
@@ -213,7 +215,7 @@ class EventProtocol(EventSocket):
             evname = "on" + string.capwords(name, "_").replace("_", "")
 
         method = getattr(self, evname, None)
-        if method:
+        if callable(method):
             return method(ctx.data)
         else:
             return self.unboundEvent(ctx.data, evname)
