@@ -140,7 +140,7 @@ class EventSocket(basic.LineReceiver):
         else:
             data, rest = data[:self.__rawlen], data[self.__rawlen:]
             self.__rawlen -= len(data)
-	
+
         self.__io.write(data)
         if self.__rawlen == 0:
             if self.__ctx.get("Content_Type") in self.__rawresponse:
@@ -148,7 +148,7 @@ class EventSocket(basic.LineReceiver):
             else:
                 self.dispatchEvent(self.__ctx, self.parseEvent())
                 self.setLineMode(rest)
-		
+
 class EventProtocol(EventSocket):
     def __init__(self):
         EventSocket.__init__(self)
@@ -324,28 +324,35 @@ class EventProtocol(EventSocket):
 
     def record_session(self, filename):
         """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_record_session
-        
+
         >>> record_session("/tmp/dump.gsm")
         """
         return self.__protocolSendmsg("record_session", filename, lock=True)
 
+    def read(self, args):
+        """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_read
+
+        >>> read("0 10 $${base_dir}/sounds/en/us/callie/conference/8000/conf-pin.wav res 10000 #")
+        """
+        return self.__protocolSendmsg("read", args, lock=True)
+
     def bind_meta_app(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_bind_meta_app
-        
+
         >>> bind_meta_app("2 ab s record_session::/tmp/dump.gsm")
         """
         return self.__protocolSendmsg("bind_meta_app", args, lock=True)
 
     def wait_for_silence(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_wait_for_silence
-        
+
         >>> wait_for_silence("200 15 10 5000")
         """
         return self.__protocolSendmsg("wait_for_silence", args, lock=True)
 
     def sleep(self, milliseconds):
         """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_sleep
-        
+
         >>> sleep(5000)
         >>> sleep("5000")
         """
@@ -353,7 +360,7 @@ class EventProtocol(EventSocket):
 
     def vmd(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Mod_vmd
-        
+
         >>> vmd("start")
         >>> vmd("stop")
         """
@@ -361,21 +368,21 @@ class EventProtocol(EventSocket):
 
     def set(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_set
-        
+
         >>> set("ringback=${us-ring}")
         """
         return self.__protocolSendmsg("set", args, lock=True)
 
     def set_global(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_set_global
-        
+
         >>> set_global("global_var=value")
         """
         return self.__protocolSendmsg("set_global", args, lock=True)
 
     def unset(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_unset
-        
+
         >>> unset("ringback")
         """
         return self.__protocolSendmsg("unset", args, lock=True)
@@ -426,27 +433,27 @@ class EventProtocol(EventSocket):
 
     def play_fsv(self, filename):
         """Please refer to http://wiki.freeswitch.org/wiki/Mod_fsv
-        
+
         >>> play_fsv("/tmp/video.fsv")
         """
         return self.__protocolSendmsg("play_fsv", filename, lock=True)
 
     def record_fsv(self, filename):
         """Please refer to http://wiki.freeswitch.org/wiki/Mod_fsv
-        
+
         >>> record_fsv("/tmp/video.fsv")
         """
         return self.__protocolSendmsg("record_fsv", filename, lock=True)
 
     def playback(self, filename, terminators=None):
         """Please refer to http://wiki.freeswitch.org/wiki/Mod_playback
-        
+
         The optional argument `terminators` may contain a string with
         the characters that will terminate the playback.
-        
+
         >>> playback("/tmp/dump.gsm", terminators="#8")
-        
-        In this case, the audio playback is automatically terminated 
+
+        In this case, the audio playback is automatically terminated
         by pressing either '#' or '8'.
         """
         self.set("playback_terminators=%s" % terminators or "none")
@@ -461,14 +468,14 @@ class EventProtocol(EventSocket):
 
     def att_xfer(self, url):
         """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_att_xfer
-        
+
         >>> att_xfer("user/1001")
         """
         return self.__protocolSendmsg("att_xfer", url, lock=True)
 
     def endless_playback(self, filename):
         """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_endless_playback
-        
+
         >>> endless_playback("/tmp/dump.gsm")
         """
         return self.__protocolSendmsg("endless_playback", filename, lock=True)
