@@ -186,7 +186,7 @@ class EventProtocol(EventSocket):
                 return method(ctx)
             else:
                 return self.unknownContentType(content_type, ctx)
-    
+
     def authRequest(self, ctx):
         pass
 
@@ -277,7 +277,7 @@ class EventProtocol(EventSocket):
 
     def auth(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#auth
-        
+
         This method is allowed only for Inbound connections."""
         return self.__protocolSend("auth", args)
 
@@ -295,20 +295,20 @@ class EventProtocol(EventSocket):
 
     def bridge(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Event_Socket_Outbound
-        
+
         >>> bridge("{ignore_early_media=true}sofia/gateway/myGW/177808")
         """
         return self.__protocolSendmsg("bridge", args, lock=True)
 
     def hangup(self, reason=""):
         """Hangup may be used by both Inbound and Outbound connections.
-        
+
         When used by Inbound connections, you may add the extra `reason`
         argument. Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#hangup
         for details.
-        
+
         When used by Outbound connections, the `reason` argument must be ignored.
-        
+
         Please refer to http://wiki.freeswitch.org/wiki/Event_Socket_Outbound for
         details.
         """
@@ -445,7 +445,7 @@ class EventProtocol(EventSocket):
         """
         return self.__protocolSendmsg("record_fsv", filename, lock=True)
 
-    def playback(self, filename, terminators=None):
+    def playback(self, filename, terminators=None, lock=True):
         """Please refer to http://wiki.freeswitch.org/wiki/Mod_playback
 
         The optional argument `terminators` may contain a string with
@@ -457,7 +457,7 @@ class EventProtocol(EventSocket):
         by pressing either '#' or '8'.
         """
         self.set("playback_terminators=%s" % terminators or "none")
-        return self.__protocolSendmsg("playback", filename, lock=True)
+        return self.__protocolSendmsg("playback", filename, lock=lock)
 
     def transfer(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_transfer
@@ -465,6 +465,13 @@ class EventProtocol(EventSocket):
         >>> transfer("3222 XML default")
         """
         return self.__protocolSendmsg("transfer", args, lock=True)
+
+    def conference(self, args):
+        """Please refer to http://wiki.freeswitch.org/wiki/Mod_conference#API_Reference
+
+        >>> conference("myconf")
+        """
+        return self.__protocolSendmsg("conference", args, lock=True)
 
     def att_xfer(self, url):
         """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_att_xfer
