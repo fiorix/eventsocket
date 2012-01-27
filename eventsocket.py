@@ -249,9 +249,9 @@ class EventProtocol(EventSocket):
         "Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#event"
         return self.__protocolSendmsg("event", args, lock=True)
     
-    def linger(self, args):
+    def linger(self:
         "Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#event"
-        return self.__protocolSendmsg("linger", args, lock=True)
+        return self.__protocolSendmsg("linger", None, lock=True)
 
     def filter(self, args):
         """Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#filter
