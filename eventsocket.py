@@ -56,7 +56,7 @@ class EventSocket(basic.LineReceiver):
         self.__crlf = re.compile(r"[\r\n]+")
         self.__rawresponse = [
             "api/response",
-            "text/disconnect-notice",
+            #"text/disconnect-notice",
         ]
 
     def send(self, cmd):
