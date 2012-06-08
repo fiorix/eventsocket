@@ -484,6 +484,9 @@ class EventProtocol(EventSocket):
         """
         return self.__protocolSendmsg("att_xfer", url, lock=True)
 
+    def send_break(self):
+        return self.__protocolSendmsg("break", lock=True)
+
     def endless_playback(self, filename):
         """Please refer to http://wiki.freeswitch.org/wiki/Misc._Dialplan_Tools_endless_playback
 
