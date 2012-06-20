@@ -56,7 +56,7 @@ class EventSocket(basic.LineReceiver):
         self.__crlf = re.compile(r"[\r\n]+")
         self.__rawresponse = [
             "api/response",
-            #"text/disconnect-notice",
+            "text/disconnect-notice",
         ]
 
     def send(self, cmd):
@@ -147,7 +147,7 @@ class EventSocket(basic.LineReceiver):
                 self.dispatchEvent(self.__ctx, self.readRawResponse())
             else:
                 self.dispatchEvent(self.__ctx, self.parseEvent())
-                self.setLineMode(rest)
+            self.setLineMode(rest)
 
 class EventProtocol(EventSocket):
     def __init__(self):
