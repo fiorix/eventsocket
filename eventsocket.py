@@ -64,6 +64,11 @@ class EventSocket(basic.LineReceiver):
             cmd = cmd.encode("utf-8")
         self.transport.write(cmd+"\n\n")
 
+    def rawSend(self, stuff):
+        if isinstance(stuff, types.UnicodeType):
+            stuff = stuff.encode('utf-8')
+        self.transport.write(stuff)
+
     def sendmsg(self, name, arg=None, uuid="", lock=False):
         if isinstance(name, types.UnicodeType):
             name = name.encode("utf-8")
@@ -171,6 +176,12 @@ class EventProtocol(EventSocket):
         self.send("%s %s" % (name, args))
         return deferred
 
+    def __protocolSendRaw(self, name, args=""):
+        deferred = defer.Deferred()
+        self.__EventQueue.append((name, deferred))
+        self.rawSend("%s %s" % (name, args))
+        return deferred
+
     def __protocolSendmsg(self, name, args=None, uuid="", lock=False):
         deferred = defer.Deferred()
         self.__EventQueue.append((name, deferred))
@@ -232,6 +243,16 @@ class EventProtocol(EventSocket):
     def api(self, args):
         "Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#api"
         return self.__protocolSend("api", args)
+
+    def sendevent(self, name, args=dict(),body=None):
+        "Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#sendevent"
+        parsed_args = [name]
+        for k,v in args.iteritems():
+            parsed_args.append('%s: %s' % (k, v))
+        parsed_args.append('')
+        if body:
+            parsed_args.append(body)
+        return self.__protocolSendRaw("sendevent", '\n'.join(parsed_args))
 
     def bgapi(self, args):
         "Please refer to http://wiki.freeswitch.org/wiki/Event_Socket#bgapi"
