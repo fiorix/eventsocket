@@ -252,6 +252,8 @@ class EventProtocol(EventSocket):
         parsed_args.append('')
         if body:
             parsed_args.append(body)
+        else:
+            parsed_args.append('')
         return self.__protocolSendRaw("sendevent", '\n'.join(parsed_args))
 
     def bgapi(self, args):
