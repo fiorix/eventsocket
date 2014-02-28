@@ -10,5 +10,5 @@ setup(
     author="Alexandre Fiori",
     url="http://github.com/fiorix/eventsocket",
     py_modules=["eventsocket"],
-    #install_requires=["twisted"],
+    install_requires=["twisted"],
 )
