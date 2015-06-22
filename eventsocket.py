@@ -20,9 +20,11 @@ import types
 import string
 import re, urllib
 from cStringIO import StringIO
-from twisted.python import log
+from twisted.logger import Logger
 from twisted.protocols import basic
 from twisted.internet import defer, reactor, protocol
+
+log = Logger()
 
 __version__ = "0.1.4"
 
@@ -232,12 +234,10 @@ class EventProtocol(EventSocket):
             return self.unboundEvent(ctx.data, evname)
 
     def unknownContentType(self, content_type, ctx):
-        log.err("[eventsocket] unknown Content-Type: %s" % content_type,
-            logLevel=log.logging.DEBUG)
+        log.debug("[eventsocket] unknown Content-Type: %s" % content_type)
 
     def unboundEvent(self, ctx, evname):
-        log.err("[eventsocket] unbound Event: %s" % evname,
-            logLevel=log.logging.DEBUG)
+        log.debug("[eventsocket] unbound Event: %s" % evname)
 
     # EVENT SOCKET COMMANDS
     def api(self, args):
