@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
     name="eventsocket",
-    version="0.1.4",
+    version="0.1.5",
     description="Twisted protocol for the FreeSWITCH's Event Socket",
     author="Alexandre Fiori",
     url="http://github.com/fiorix/eventsocket",
